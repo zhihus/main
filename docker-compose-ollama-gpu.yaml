@@ -39,7 +39,6 @@ services:
     volumes:
       - flowise_database:/root/.flowise
     networks:
-      - traefik_public
       - app_network
     environment:
       DATABASE_TYPE: postgres
@@ -63,6 +62,7 @@ services:
         limits:
           cpus: "1"
           memory: 1024M
+<<<<<<< HEAD
       labels:
         - traefik.enable=true
         - traefik.http.routers.flowise.rule=Host(`localhost`)
@@ -70,6 +70,10 @@ services:
         - traefik.http.routers.flowise.tls.certresolver=le
         - traefik.http.routers.flowise.service=flowise
         - traefik.http.services.flowise.loadbalancer.server.port=3001
+=======
+          ports:
+      - 3001:8081
+>>>>>>> fa538c4f07cdeccd0dcceb38540a50020c4675b2
 volumes:
   flowise_database:
     external: true
