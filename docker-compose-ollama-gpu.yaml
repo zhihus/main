@@ -1,5 +1,5 @@
-version: '3.8'
-
+---
+version: "3.8"
 services:
   ollama:
     volumes:
@@ -17,8 +17,8 @@ services:
           devices:
             - driver: nvidia
               count: 1
-              capabilities: [gpu]
-
+              capabilities:
+                - gpu
   ollama-webui:
     image: ghcr.io/ollama-webui/ollama-webui:main
     container_name: ollama-webui
@@ -29,11 +29,10 @@ services:
     ports:
       - 3000:8080
     environment:
-      - '/ollama/api=http://ollama:11434/api'
+      - /ollama/api=http://ollama:11434/api
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
-    
   flowise:
     image: flowiseai/flowise:latest
     command: /bin/sh -c "sleep 3; flowise start"
@@ -43,14 +42,12 @@ services:
       - traefik_public
       - app_network
     environment:
-      # dados do banco
       DATABASE_TYPE: postgres
       DATABASE_NAME: flowise
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       DATABASE_USER: postgres
       DATABASE_PASSWORD: SUA_SENHA
-      # dados do user do flowise
       FLOWISE_USERNAME: aprendanaweb
       FLOWISE_PASSWORD: SUA_SENHA
       FLOWISE_SECRETKEY_OVERWRITE: SUA_CHAVE_AQUI
@@ -73,11 +70,9 @@ services:
         - traefik.http.routers.flowise.tls.certresolver=le
         - traefik.http.routers.flowise.service=flowise
         - traefik.http.services.flowise.loadbalancer.server.port=3000
-
 volumes:
   flowise_database:
     external: true
-
 networks:
   traefik_public:
     external: true
