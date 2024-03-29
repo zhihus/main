@@ -1,0 +1,80 @@
+---
+version: "3.8"
+services:
+  ollama:
+    volumes:
+      - $HOME/ollama/ollama:/root/.ollama
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+    ports:
+      - 11434:11434
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities:
+                - gpu
+  ollama-webui:
+    image: ghcr.io/ollama-webui/ollama-webui:main
+    container_name: ollama-webui
+    volumes:
+      - $HOME/ollama/ollama-webui:/app/backend/data
+    depends_on:
+      - ollama
+    ports:
+      - 3000:8080
+    environment:
+      - /ollama/api=http://ollama:11434/api
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+  flowise:
+    image: flowiseai/flowise:latest
+    command: /bin/sh -c "sleep 3; flowise start"
+    volumes:
+      - flowise_database:/root/.flowise
+    networks:
+      - traefik_public
+      - app_network
+    environment:
+      DATABASE_TYPE: postgres
+      DATABASE_NAME: flowise
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: Yucine08082009
+      FLOWISE_USERNAME: zhihus
+      FLOWISE_PASSWORD: Yucine08082009
+      FLOWISE_SECRETKEY_OVERWRITE: WORLD_WIDE_WEB
+      DEBUG: "true"
+      LOG_LEVEL: debug
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.flowise.rule=Host(`localhost`)
+        - traefik.http.routers.flowise.entrypoints=websecure
+        - traefik.http.routers.flowise.tls.certresolver=le
+        - traefik.http.routers.flowise.service=flowise
+        - traefik.http.services.flowise.loadbalancer.server.port=3001
+volumes:
+  flowise_database:
+    external: true
+networks:
+  traefik_public:
+    external: true
+  app_network:
+    external: true
