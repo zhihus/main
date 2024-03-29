@@ -49,11 +49,11 @@ services:
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       DATABASE_USER: postgres
-      DATABASE_PASSWORD: SUA_SENHA
+      DATABASE_PASSWORD: Yucine08082009
       # dados do user do flowise
-      FLOWISE_USERNAME: aprendanaweb
-      FLOWISE_PASSWORD: SUA_SENHA
-      FLOWISE_SECRETKEY_OVERWRITE: SUA_CHAVE_AQUI
+      FLOWISE_USERNAME: zhihus
+      FLOWISE_PASSWORD: Yucine08082009
+      FLOWISE_SECRETKEY_OVERWRITE: WORLD_WIDE_WEB
       DEBUG: "true"
       LOG_LEVEL: debug
     deploy:
